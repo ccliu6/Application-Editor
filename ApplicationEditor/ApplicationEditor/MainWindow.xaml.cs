@@ -28,10 +28,16 @@ namespace ApplicationEditor
 
         private async void App_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (sender is ListBox listBox && listBox.Items.Count > 0)
+            if (sender is ListBox listBox && listBox.SelectedIndex != -1)
             {
                 AppDataGrid.ItemsSource = null;
-                AppDataGrid.ItemsSource = appMgr.GetEditList(listBox.SelectedItem.ToString(), listBox == BuildInList);
+                bool bBuildIn = listBox == BuildInList;
+                AppDataGrid.ItemsSource = appMgr.GetEditList(listBox.SelectedItem.ToString(), bBuildIn);
+
+                if (bBuildIn)
+                    CustomList.SelectedIndex = -1;
+                else
+                    BuildInList.SelectedIndex = -1;
 
                 await Task.Delay(1000);
 
