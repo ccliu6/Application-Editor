@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Windows.Input;
 
@@ -62,8 +63,7 @@ namespace DataCore
         #region Constructor
         public ApplicationDataMgr()
         {
-            apps_BuildIn = new Dictionary<string, Application>();
-            apps_Custom = new Dictionary<string, Application>();
+            apps_Dic = new Dictionary<string, Application>();
 
             CommandSave = new RelayCommand(WriteFiles);
             CommandClone = new RelayCommand(CloneSelected);
@@ -72,40 +72,31 @@ namespace DataCore
 
 
         #region Interface
-        private Dictionary<string, Application> apps_BuildIn;
+        private Dictionary<string, Application> apps_Dic;
 
-        public Dictionary<string, Application> Apps_BuildIn
+        public Dictionary<string, Application> AppsDic
         {
-            get { return apps_BuildIn; }
-            set { apps_BuildIn = value; }
-        }
-
-        private Dictionary<string, Application> apps_Custom;
-
-        public Dictionary<string, Application> Apps_Custom
-        {
-            get { return apps_Custom; }
-            set { apps_Custom = value; }
+            get { return apps_Dic; }
+            set { apps_Dic = value; }
         }
 
         public void ReadFiles(string path)
         {
-            ReadFile(path, ref apps_BuildIn);
-            ReadFile(path.Replace(".", "C."), ref apps_Custom);
+            ReadFile(path);
+            nBuildInAppCount = apps_Dic.Count;
+            ReadFile(path.Replace(".", "C."));
 
             filePath = path;
         }
 
-        public ObservableCollection<ParmAttribute> GetEditList(string appName, bool bBuildIn)
+        public ObservableCollection<ParmAttribute> GetEditList(string appName)
         {
             currentAppName = appName;
-            bIsBuildIn = bBuildIn;
 
-            var apps = bIsBuildIn ? Apps_BuildIn : Apps_Custom;
             if (IsAdvanced)
-                return apps[appName].ParmList;
+                return AppsDic[appName].ParmList;
             else
-                return new ObservableCollection<ParmAttribute>(apps[appName].ParmList.Where(p => p.Visibility != "IP").ToList());
+                return new ObservableCollection<ParmAttribute>(AppsDic[appName].ParmList.Where(p => p.Visibility != "IP").ToList());
         }
 
         public RelayCommand CommandSave { get; set; }
@@ -123,48 +114,62 @@ namespace DataCore
 
         string filePath;
         string currentAppName;
-        bool bIsBuildIn;
+        int nBuildInAppCount;
 
-        void WriteFiles(object p)
+        void ReadFile(string path)
         {
-            WriteFile(filePath, ref apps_BuildIn);
-            WriteFile(filePath.Replace(".", "C."), ref apps_Custom);
-        }
-
-        void ReadFile(string path, ref Dictionary<string, Application> appDic)
-        {
-            using (System.IO.StreamReader file =
-                new System.IO.StreamReader(path))
+            if (File.Exists(path))
             {
-                string line;
-                line = file.ReadLine();
-                if (line == strVersion)
+                using (System.IO.StreamReader file =
+                    new System.IO.StreamReader(path))
                 {
-                    while ((line = file.ReadLine()) != null)
+                    string line;
+                    line = file.ReadLine();
+                    if (line == strVersion)
                     {
-                        if (line.Contains(strAppTag))
+                        while ((line = file.ReadLine()) != null)
                         {
-                            var app = new Application(line.Substring(strAppTag.Length));
-                            if (app.Read(file, strAppEnd) > 4)
-                                appDic.Add(app.Name, app);
-                        }
+                            if (line.Contains(strAppTag))
+                            {
+                                var app = new Application(line.Substring(strAppTag.Length));
+                                if (app.Read(file, strAppEnd) > 20)
+                                    apps_Dic.Add(app.Name, app);
+                            }
 
+                        }
                     }
                 }
             }
         }
 
-        void WriteFile(string path, ref Dictionary<string, Application> appDic)
+        void WriteFiles(object p)
         {
-            using (System.IO.StreamWriter file =
-                new System.IO.StreamWriter(path))
+            using (System.IO.StreamWriter filec =
+                new System.IO.StreamWriter(filePath.Replace(".", "C.")))
             {
-                file.WriteLine(strVersion);
-                foreach (var app in appDic.Values)
+                using (System.IO.StreamWriter file =
+                     new System.IO.StreamWriter(filePath))
                 {
-                    file.WriteLine(strAppTag + app.Name);
-                    app.Write(file);
-                    file.WriteLine(strAppEnd);
+                    file.WriteLine(strVersion);
+                    filec.WriteLine(strVersion);
+
+                    int i = 0;
+                    foreach (var app in apps_Dic.Values)
+                    {
+                        if (i < nBuildInAppCount) //BuildIn
+                        {
+                            file.WriteLine(strAppTag + app.Name);
+                            app.Write(file);
+                            file.WriteLine(strAppEnd);
+                            i++;
+                        }
+                        else  //Custom
+                        {
+                            filec.WriteLine(strAppTag + app.Name);
+                            app.Write(filec);
+                            filec.WriteLine(strAppEnd);
+                        }
+                    }
                 }
             }
         }
@@ -172,10 +177,11 @@ namespace DataCore
         void CloneSelected(object p)
         {
             string newName = p as string;
-            var apps = bIsBuildIn ? Apps_BuildIn : Apps_Custom;
 
-            var newApp = new Application(newName, apps[currentAppName]);
-            Apps_Custom.Add(newName, newApp);
+            newName = currentAppName + newName; //Remove after done
+
+            var newApp = new Application(newName, AppsDic[currentAppName]);
+            AppsDic.Add(newName, newApp);
         }
 
         #endregion

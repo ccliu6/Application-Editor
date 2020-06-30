@@ -13,13 +13,12 @@
         </Grid.ColumnDefinitions>
         <Grid Name="Applications">
             <Grid.RowDefinitions>
-                <RowDefinition Height="139*"/>
-                <RowDefinition Height="303*"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="*"/>
                 <RowDefinition Height="43"/>
             </Grid.RowDefinitions>
-            <ListBox Name="BuildInList" SelectionChanged="App_SelectionChanged"/>
-            <ListBox Name="CustomList" Grid.Row="1" SelectionChanged="App_SelectionChanged">
-            </ListBox>
+            <Label Content="Application List:" Background="WhiteSmoke"/>
+            <ListBox Name="AppList" Grid.Row="1" SelectionChanged="App_SelectionChanged"/>
             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left">
                 <Button Width="64" Content="Save" Margin="20,6,0,4" Command="{Binding CommandSave}"/>
                 <Button Width="64" Content="Close" Margin="20,6,0,4" Click="Button_Click"/>
