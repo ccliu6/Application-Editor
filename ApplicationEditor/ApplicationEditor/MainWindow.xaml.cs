@@ -32,6 +32,11 @@ namespace ApplicationEditor
                 MessageBox.Show($"File '{path}' does not exist!", "Import Error");
         }
 
+        /// <summary>
+        /// Handle Selection Change
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void App_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (sender is ListBox listBox && listBox.SelectedIndex != -1)
@@ -52,7 +57,7 @@ namespace ApplicationEditor
                 await Task.Delay(10);
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_Click_Exit(object sender, RoutedEventArgs e)
         {
             if (appMgr != null && MessageBox.Show("Save changes before close?", "Close", MessageBoxButton.YesNo)
                 == MessageBoxResult.Yes)
@@ -63,6 +68,11 @@ namespace ApplicationEditor
             this.Close();
         }
 
+        /// <summary>
+        /// Clone the selected
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void Button_Click_C(object sender, RoutedEventArgs e)
         {
             if (appMgr != null)
@@ -81,7 +91,6 @@ namespace ApplicationEditor
                     }
                 }
 
-
                 appMgr.CommandClone.Execute(newName);
 
                 await Task.Delay(500);
@@ -93,6 +102,32 @@ namespace ApplicationEditor
 
                 //switch to the new added at the end
                 AppList.SelectedIndex = appMgr.AppsDic.Count - 1;
+            }
+        }
+
+        /// <summary>
+        /// Delete the selected
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void Button_Click_Del(object sender, RoutedEventArgs e)
+        {
+            if (appMgr != null)
+            {
+                int currentIndex = AppList.SelectedIndex;
+
+                if (appMgr.DeleteSelctedApp(currentIndex))
+                {
+                    await Task.Delay(500);
+
+                    AppList.ItemsSource = null;
+                    AppList.ItemsSource = appMgr.AppsDic.Keys;
+
+                    await Task.Delay(500);
+                    AppList.SelectedIndex = currentIndex - 1;
+                }
+                else
+                    MessageBox.Show("A Build-In application cannot be deleted.", "Delete Warming");
             }
         }
     }

@@ -99,6 +99,17 @@ namespace DataCore
                 return new ObservableCollection<ParmAttribute>(AppsDic[appName].ParmList.Where(p => p.Visibility != "IP").ToList());
         }
 
+        public bool DeleteSelctedApp(int nSel)
+        {
+            if (nSel < nBuildInAppCount)
+                return false;
+            else
+            {
+                AppsDic.Remove(currentAppName);
+                return true;
+            }   
+        }
+
         public RelayCommand CommandSave { get; set; }
 
         public RelayCommand CommandClone { get; set; }
