@@ -36,8 +36,8 @@ namespace DataCore
             string line;
             foreach (var p in ParmList)
             {
-                line = $"{p.Source};{p.Tag};{p.Name};{p.Visibility};" +
-                    $"{p.StrValue};{p.NumValue};{p.NumMin};{p.NumMax};{p.ExtZRatio}";
+                line = $"{p.Source},{p.Tag},{p.Name},{p.Visibility}," +
+                    $"{p.StrValue},{p.NumValue},{p.NumMin},{p.NumMax},{p.ExtZRatio}";
                 line = line.Replace('\xB5', '~');
                 //line = line.Replace('\xB5', '~').Replace('\xB2', '^').Replace('\xB3', '`');
                 file.WriteLine(line);
@@ -48,7 +48,7 @@ namespace DataCore
         {
             int nCount = 0;
 
-            Char[] sepKey = { ';' };
+            Char[] sepKey = { ';', ',' };
             string line;
             while ((line = file.ReadLine()) != null && (endTag != line))
             {
