@@ -33,10 +33,14 @@ namespace DataCore
         #region Read/Write
         public void Write(System.IO.StreamWriter file)
         {
+            string line;
             foreach (var p in ParmList)
             {
-                file.WriteLine($"{p.Source};{p.Tag};{p.Name};{p.Visibility};" +
-                    $"{p.StrValue};{p.NumValue};{p.NumMin};{p.NumMax};{p.ExtZRatio}");
+                line = $"{p.Source};{p.Tag};{p.Name};{p.Visibility};" +
+                    $"{p.StrValue};{p.NumValue};{p.NumMin};{p.NumMax};{p.ExtZRatio}";
+                line = line.Replace('\xB5', '~');
+                //line = line.Replace('\xB5', '~').Replace('\xB2', '^').Replace('\xB3', '`');
+                file.WriteLine(line);
             }
         }
 
@@ -48,6 +52,8 @@ namespace DataCore
             string line;
             while ((line = file.ReadLine()) != null && (endTag != line))
             {
+                line = line.Replace('~', '\xB5');
+                //line = line.Replace('~', '\xB5').Replace('^', '\xB2').Replace('`', '\xB3');
                 string[] cells = line.Split(sepKey);
                 if (cells.Length == 9)
                 {

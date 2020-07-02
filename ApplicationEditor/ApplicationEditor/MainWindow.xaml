@@ -26,6 +26,7 @@
             </Grid.RowDefinitions>
             <DataGrid Name="AppDataGrid" CanUserAddRows="False" CanUserReorderColumns="False" CanUserSortColumns="False"/>
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                <ComboBox Width="100" Height="25" Margin="0, 0, 30, 0" ItemsSource="{Binding ModeValues}" SelectedItem="{Binding EditMode}"/>           
                 <Button Content="Delete App" Width="100" Height="33" Margin="0, 0, 10, 0" Click="Button_Click_Del"/>
                 <Button Content="Clone App" Width="100" Height="33" Margin="0, 0, 30, 0" Click="Button_Click_C"/>
                 <Button Content="Save" Width="64" Height="33" Margin="0, 0, 10, 0" Command="{Binding CommandSave}"/>

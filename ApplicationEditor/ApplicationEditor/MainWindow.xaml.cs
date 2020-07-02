@@ -27,6 +27,8 @@ namespace ApplicationEditor
                 AppList.SelectedIndex = 0;
 
                 DataContext = appMgr;
+
+                appMgr.EnableCells = new System.Action(EnableCells);
             }
             else
                 MessageBox.Show($"File '{path}' does not exist!", "Import Error");
@@ -39,22 +41,27 @@ namespace ApplicationEditor
         /// <param name="e"></param>
         private async void App_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (sender is ListBox listBox && listBox.SelectedIndex != -1)
+            if (AppList.SelectedIndex != -1 && sender == AppList)
             {
                 AppDataGrid.ItemsSource = null;
-                AppDataGrid.ItemsSource = appMgr.GetEditList(listBox.SelectedItem.ToString());
+                AppDataGrid.ItemsSource = appMgr.GetEditList(AppList.SelectedItem.ToString());
 
                 await Task.Delay(1000);
 
-                if (!appMgr.IsAdvanced)
-                {
-                    AppDataGrid.Columns[0].IsReadOnly = true;
-                    AppDataGrid.Columns[1].IsReadOnly = true;
-                    AppDataGrid.Columns[2].IsReadOnly = true;
-                }
+                EnableCells();
             }
             else
                 await Task.Delay(10);
+        }
+
+        private void EnableCells()
+        {
+            AppDataGrid.IsReadOnly = appMgr.EditMode == EditModes.ReadOnly;
+            bool bsRO = appMgr.EditMode == EditModes.ValueEdit || !appMgr.IsAdvanced;
+            AppDataGrid.Columns[0].IsReadOnly = bsRO;
+            AppDataGrid.Columns[1].IsReadOnly = bsRO;
+            AppDataGrid.Columns[2].IsReadOnly = bsRO;
+            AppDataGrid.Columns[4].IsReadOnly = bsRO;
         }
 
         private void Button_Click_Exit(object sender, RoutedEventArgs e)
@@ -112,22 +119,26 @@ namespace ApplicationEditor
         /// <param name="e"></param>
         private async void Button_Click_Del(object sender, RoutedEventArgs e)
         {
-            if (appMgr != null)
-            {
-                int currentIndex = AppList.SelectedIndex;
-
-                if (appMgr.DeleteSelctedApp(currentIndex))
-                {
-                    await Task.Delay(500);
-
-                    AppList.ItemsSource = null;
-                    AppList.ItemsSource = appMgr.AppsDic.Keys;
-
-                    await Task.Delay(500);
-                    AppList.SelectedIndex = currentIndex - 1;
-                }
+            int currentIndex = AppList.SelectedIndex;
+            if (appMgr != null && currentIndex > -1)
+            {     
+                if (currentIndex < appMgr.nBuildInAppCount)
+                    MessageBox.Show("The Build-In application cannot be deleted.", "Delete Limit");
                 else
-                    MessageBox.Show("A Build-In application cannot be deleted.", "Delete Warming");
+                {
+                    if(MessageBox.Show($"Sure to delete the '{AppList.SelectedItem.ToString()}' ?",
+                    "Delete Confirmation", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                    {
+                        appMgr.DeleteSelctedApp();
+                        await Task.Delay(500);
+
+                        AppList.ItemsSource = null;
+                        AppList.ItemsSource = appMgr.AppsDic.Keys;
+
+                        await Task.Delay(500);
+                        AppList.SelectedIndex = currentIndex - 1;
+                    }                      
+                } 
             }
         }
     }

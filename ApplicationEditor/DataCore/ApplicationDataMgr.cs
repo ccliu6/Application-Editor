@@ -54,11 +54,18 @@ namespace DataCore
         #endregion // ICommand Members
     }
 
+    public enum EditModes
+    {
+        ReadOnly,
+        ValueEdit,
+        FullyEdit
+    }
+
 
     /// <summary>
     /// AppMgr 
     /// </summary>
-    public class ApplicationDataMgr
+    public class ApplicationDataMgr : ViewModelBase
     {
         #region Constructor
         public ApplicationDataMgr()
@@ -99,22 +106,43 @@ namespace DataCore
                 return new ObservableCollection<ParmAttribute>(AppsDic[appName].ParmList.Where(p => p.Visibility != "IP").ToList());
         }
 
-        public bool DeleteSelctedApp(int nSel)
+        public void DeleteSelctedApp()
         {
-            if (nSel < nBuildInAppCount)
-                return false;
-            else
-            {
-                AppsDic.Remove(currentAppName);
-                return true;
-            }   
+            AppsDic.Remove(currentAppName);   
         }
 
         public RelayCommand CommandSave { get; set; }
 
         public RelayCommand CommandClone { get; set; }
 
-        public bool IsAdvanced { get; set; } = true; 
+        public bool IsAdvanced { get; set; } = true;
+
+        public int nBuildInAppCount;
+
+        public Action EnableCells;
+
+        /// <summary>
+        /// Edit Modes
+        /// </summary>
+        public IEnumerable<EditModes> ModeValues
+        {
+            get
+            {
+                return Enum.GetValues(typeof(EditModes))
+                    .Cast<EditModes>();
+            }
+        }
+        EditModes eMode = EditModes.ReadOnly;
+        public EditModes EditMode
+        {
+            get { return eMode; }
+            set
+            {
+                SetField(ref eMode, value, nameof(EditModes));
+                EnableCells?.Invoke();
+            }
+        }
+
         #endregion
 
         #region SupportMembers
@@ -125,7 +153,7 @@ namespace DataCore
 
         string filePath;
         string currentAppName;
-        int nBuildInAppCount;
+        
 
         void ReadFile(string path)
         {
