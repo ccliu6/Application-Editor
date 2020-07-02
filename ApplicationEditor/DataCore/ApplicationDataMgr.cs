@@ -171,7 +171,7 @@ namespace DataCore
                             if (line.Contains(strAppTag))
                             {
                                 var app = new Application(line.Substring(strAppTag.Length));
-                                if (app.Read(file, strAppEnd) > 20)
+                                if (app.Read(file, strAppEnd) > 10)
                                     apps_Dic.Add(app.Name, app);
                             }
 

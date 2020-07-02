@@ -2,15 +2,11 @@
 // Copyright Bruker Corporation 2009-2014. All rights reserved.
 //
 #include "pch.h"
-#include ".\ryptoobject.h"
-//#include "Boost\algorithm\string\replace.hpp"
+#include "ryptoobject.h"
+#include "Boost\algorithm\string\replace.hpp"
 #include <algorithm>
 
 using namespace std;
-//CryptoObject::CryptoObject()
-//{
-//	srand(169172);
-//}
 
 CryptoObject::CryptoObject(const string& name, bool bAddRandomness)
 {
@@ -70,8 +66,7 @@ eCryptoStatus CryptoObject::encrypt(const std::string &inputStr, std::string &sV
 		return eMissingKey;
 	std::string inputStrCpy = inputStr;
 	std::replace(inputStrCpy.begin(), inputStrCpy.end(), ' ', '`');
-	//boost::algorithm::replace_all(inputStrCpy, "\r\n", ";");
-	//boost::algorithm::replace_all(inputStrCpy, " ", "`");
+	boost::algorithm::replace_all(inputStrCpy, "\r\n", ";");
 	const char *pStr = inputStrCpy.c_str();
 	size_t sBufferSize = std::max(inputStrCpy.size(), strlen(m_key)) + 1;
 	char* sBuffer = new char[sBufferSize];
@@ -214,8 +209,7 @@ eCryptoStatus CryptoObject::decrypt(const std::string &sValue, std::string &outp
 	// The output string is returned only if key has been matched successfully.
 	outputStr = sBuffer;
 
-	//boost::replace_all(outputStr, ";", "\r\n");
-	//boost::replace_all(outputStr, "`", " ");
+	boost::replace_all(outputStr, ";", "\r\n");
 	std::replace(outputStr.begin(), outputStr.end(), '`', ' ');
 	delete[] sBuffer;
 
