@@ -1,0 +1,21 @@
+﻿<Window x:Class="ApplicationEditor.NewAppDlg"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ApplicationEditor"
+        mc:Ignorable="d"
+        Title="Clone an Application" Height="332.981" Width="526.005">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="0*"/>
+        </Grid.ColumnDefinitions>
+        <TextBox x:Name="textName" Height="29" Margin="120,104,87,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top"/>
+        <Label x:Name="label" Content="Please provide an unique application name for cloning.&#xD;&#xA;The naming must follow: Build-In Name-Custom Name." HorizontalAlignment="Left" Height="45" Margin="120,43,0,0" VerticalAlignment="Top" Width="352"/>
+        <Button x:Name="buttonCreate" Content="Create" HorizontalAlignment="Left" Height="47" Margin="156,165,0,0" VerticalAlignment="Top" Width="100" IsDefault="True" Click="ButtonCreate_Click"/>
+        <Button x:Name="buttonCancel" Content="Cancel" HorizontalAlignment="Left" Height="47" Margin="296,165,0,0" VerticalAlignment="Top" Width="100" IsCancel="True"/>
+
+    </Grid>
+</Window>
+

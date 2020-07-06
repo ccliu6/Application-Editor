@@ -1,8 +1,10 @@
 ﻿using DataCore;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace ApplicationEditor
 {
@@ -44,7 +46,9 @@ namespace ApplicationEditor
             if (AppList.SelectedIndex != -1 && sender == AppList)
             {
                 AppDataGrid.ItemsSource = null;
-                AppDataGrid.ItemsSource = appMgr.GetEditList(AppList.SelectedItem.ToString());
+                string appName = AppList.SelectedItem as string;
+                AppDataGrid.ItemsSource = appMgr.GetEditList(appName);
+                Title = "Application Editor -- " + appName;
 
                 await Task.Delay(1000);
 
@@ -84,21 +88,26 @@ namespace ApplicationEditor
         {
             if (appMgr != null)
             {
-                //pop-up a dialog with old name to get the new name
+                NewAppDlg dlg = new NewAppDlg();
+                string appName = AppList.SelectedItem as string;
+                dlg.textName.Text = appName;
+                dlg.Title = $"Clone An Application From the '{appName}'";
+                if (!dlg.ShowDialog().Value)
+                    return;
 
-                string newName = "-Custom";
+                appName = dlg.textName.Text;
 
                 // Check the duplication
                 foreach (var key in appMgr.AppsDic.Keys)
                 {
-                    if (key == newName)
+                    if (key == appName)
                     {
-                        MessageBox.Show($"The name '{newName}' already exists in the custom list!", "Duplicated Name Error");
+                        MessageBox.Show($"The name '{appName}' already exists in the custom list!", "Duplicated Name Error");
                         return;
                     }
                 }
 
-                appMgr.CommandClone.Execute(newName);
+                appMgr.CommandClone.Execute(appName);
 
                 await Task.Delay(500);
 

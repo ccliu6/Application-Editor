@@ -11,7 +11,7 @@
 
 int main()
 {
-	bool bEncrypt = true;
+	bool bEncrypt = false;
 
 	std::ifstream is(bEncrypt ? "C:\\Spm1\\Application Modes\\APi.txt" : "C:\\Spm1\\Application Modes\\APe.bin", std::ifstream::binary);
 	if (is)

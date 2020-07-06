@@ -217,8 +217,6 @@ namespace DataCore
         {
             string newName = p as string;
 
-            newName = currentAppName + newName; //Remove after done
-
             var newApp = new Application(newName, AppsDic[currentAppName]);
             AppsDic.Add(newName, newApp);
         }

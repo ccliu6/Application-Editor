@@ -65,6 +65,7 @@ eCryptoStatus CryptoObject::encrypt(const std::string &inputStr, std::string &sV
 	if (m_key[0] == '\0')
 		return eMissingKey;
 	std::string inputStrCpy = inputStr;
+	//boost::algorithm::replace_all(inputStrCpy, " ", "`");
 	std::replace(inputStrCpy.begin(), inputStrCpy.end(), ' ', '`');
 	boost::algorithm::replace_all(inputStrCpy, "\r\n", ";");
 	const char *pStr = inputStrCpy.c_str();
@@ -210,6 +211,7 @@ eCryptoStatus CryptoObject::decrypt(const std::string &sValue, std::string &outp
 	outputStr = sBuffer;
 
 	boost::replace_all(outputStr, ";", "\r\n");
+	//boost::replace_all(outputStr, "`", " ");
 	std::replace(outputStr.begin(), outputStr.end(), '`', ' ');
 	delete[] sBuffer;
 
