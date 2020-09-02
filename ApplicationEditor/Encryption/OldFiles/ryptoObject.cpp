@@ -1,18 +1,13 @@
 // Bruker Confidential  
 // Copyright Bruker Corporation 2009-2014. All rights reserved.
 //
-
 #include "pch.h"
-
 #include "ryptoobject.h"
 #include "Boost\algorithm\string\replace.hpp"
-
+#include "Boost\algorithm\string\trim.hpp"
+#include <algorithm>
 
 using namespace std;
-//CryptoObject::CryptoObject()
-//{
-//	srand(169172);
-//}
 
 CryptoObject::CryptoObject(const string& name, bool bAddRandomness)
 {
@@ -38,8 +33,8 @@ void CryptoObject::SeedGenerator(const string &name, bool bAddRandomness)
 	int seed = 169172;		// allow a default seed
 	if (name.length() > 0)
 	{
-		int i = 0;
-		for (int j=0; j<name.length(); j++)
+		rsize_t i = 0;
+		for (rsize_t j=0; j< name.length(); j++)
 		{
 			if (isdigit(name[j]))
 			{
@@ -71,14 +66,14 @@ eCryptoStatus CryptoObject::encrypt(const std::string &inputStr, std::string &sV
 	if (m_key[0] == '\0')
 		return eMissingKey;
 	std::string inputStrCpy = inputStr;
+	//boost::algorithm::replace_all(inputStrCpy, " ", "`");
+	//std::replace(inputStrCpy.begin(), inputStrCpy.end(), ' ', '`');
 	boost::algorithm::replace_all(inputStrCpy, "\r\n", ";");
 	boost::algorithm::replace_all(inputStrCpy, " ", "`");
 	const char *pStr = inputStrCpy.c_str();
 	size_t sBufferSize = std::max(inputStrCpy.size(), strlen(m_key)) + 1;
 	char* sBuffer = new char[sBufferSize];
 	memset(sBuffer,'\0', sBufferSize);
-	int bufIndex=0;
-	int outIndex=0;
 	doEncrypt(m_key, sBuffer,false);	// do not recycle when encrypting the key.
 	sValue = sBuffer;
 
@@ -215,14 +210,14 @@ eCryptoStatus CryptoObject::decrypt(const std::string &sValue, std::string &outp
 	if (keyLen >0)
 		return eKeyMismatch;
 	// The output string is returned only if key has been matched successfully.
+
 	outputStr = sBuffer;
+
 	boost::replace_all(outputStr, ";", "\r\n");
-	boost::replace_all(outputStr, "`", " ");
+	//boost::replace_all(outputStr, "`", " ");
+	std::replace(outputStr.begin(), outputStr.end(), '`', ' ');
 
 	delete[] sBuffer;
 
 	return eCryptoStatusOK;
 }
-
-
-

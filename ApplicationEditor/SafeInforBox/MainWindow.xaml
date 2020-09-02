@@ -1,0 +1,31 @@
+﻿<Window x:Class="SafeInforBox.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SafeInforBox"
+        mc:Ignorable="d"
+        Title="Safe Infor Box" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        <RichTextBox x:Name="richTextBox" Margin="10, 10, 10, 0" FontSize="16">
+            <RichTextBox.Resources>
+                <Style TargetType="{x:Type Paragraph}">
+                    <Setter Property="Margin" Value="0"/>
+                </Style>
+            </RichTextBox.Resources>
+            <FlowDocument>
+                <Paragraph>
+                    <Run Text="Load the Encrypted File"/>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Name="LoadCypher"  Content="Load Encrypted File" Width="120" Height="30" Margin="0,0,40,0" Click="LoadCypher_Click"/>
+            <Button Name="SaveCypher"  Content="Save As Encrypted" Width="120" Height="30" Margin="0,0,10,0" Click="SaveCypher_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

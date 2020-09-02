@@ -11,43 +11,48 @@
 
 int main()
 {
-	bool bEncrypt = false;
 
-	std::ifstream is(bEncrypt ? "C:\\Spm1\\Application Modes\\APi.txt" : "C:\\Spm1\\Application Modes\\APe.bin", std::ifstream::binary);
-	if (is)
+	for (int i = 0; i < 2; i++)
 	{
-		// get length of file:
-		is.seekg(0, is.end);
-		int length = (int)is.tellg();
-		is.seekg(0, is.beg);
+		bool bEncrypt = i == 0;
 
-		char * buffer = new char[length];
-
-		std::cout << "Reading " << length << " characters... \n";
-		// read data as a block:
-		is.read(buffer, length);
+		std::ifstream is(bEncrypt ? "C:\\Spm1\\Application Modes\\APi.txt" : "C:\\Spm1\\Application Modes\\APe.bin", std::ifstream::binary);
 		if (is)
-			std::cout << "all characters read successfully.\n";
-		else
-			std::cout << "error: only " << is.gcount() << " could be read\n";
-		is.close();
+		{
+			// get length of file:
+			is.seekg(0, is.end);
+			int length = (int)is.tellg();
+			is.seekg(0, is.beg);
+
+			char * buffer = new char[length+1];
+			memset(buffer, 0, length + 1);
+
+			std::cout << "Reading " << length << " characters... \n";
+			// read data as a block:
+			is.read(buffer, length);
+			if (is)
+				std::cout << "all characters read successfully.\n";
+			else
+				std::cout << "error: only " << is.gcount() << " could be read\n";
+			is.close();
 
 
-		CryptoObject encrypter("");
-		encrypter.SetKey("a4rR1lKeIHmGuWj5jm5TX1aiAWdRFWkFRAkGJSK");
-		std::string cipherStr;
-		if (bEncrypt)
-			encrypter.encrypt(buffer, cipherStr);
-		else
-			encrypter.decrypt(buffer, cipherStr);
+			CryptoObject encrypter("");
+			encrypter.SetKey("a4rR1lKeIHmGuWj5jm5TX1aiAWdRFWkFRAkGJSK");
+			std::string cipherStr;
+			if (bEncrypt)
+				encrypter.encrypt(buffer, cipherStr);
+			else
+				encrypter.decrypt(buffer, cipherStr);
 
-		delete[] buffer;
+			delete[] buffer;
 
-		// Write out
-		std::ofstream outfile(bEncrypt ? "C:\\Spm1\\Application Modes\\APe.bin" : "C:\\Spm1\\Application Modes\\APo.txt", std::ofstream::binary);
-		outfile.write(cipherStr.c_str(), cipherStr.length());
-		outfile.close();
+			// Write out
+			std::ofstream outfile(bEncrypt ? "C:\\Spm1\\Application Modes\\APe.bin" : "C:\\Spm1\\Application Modes\\APo.txt", std::ifstream::binary);
+			outfile.write(cipherStr.c_str(), cipherStr.length());
+			outfile.close();
 
-		std::cout << "Writing " << cipherStr.length() << " characters... \n";;
+			std::cout << "Writing " << cipherStr.length() << " characters... \n";;
+		}
 	}
 }

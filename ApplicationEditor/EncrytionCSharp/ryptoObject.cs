@@ -216,7 +216,8 @@ namespace EncrytionCSharp
                 return eCryptoStatus.eKeyMismatch;
 
             // The output string is returned only if key has been matched successfully.
-            outputStr = encoder.GetString(sBuffer).Replace(";", "\r\n").Replace("`", " ");
+            outputStr = encoder.GetString(sBuffer);
+            outputStr = outputStr.Replace(";", "\r\n").Replace("`", " ");
 
             return eCryptoStatus.eCryptoStatusOK;
         }
